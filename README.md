@@ -5,10 +5,16 @@ A TypeScript package for scraping tweets from Nitter without authentication.
 ## Installation
 
 ```bash
+# Install as a library
 npm install nitter-scraper
+
+# Or install globally to use as CLI
+npm install -g nitter-scraper
 ```
 
 ## Usage
+
+### As a Library
 
 ```typescript
 import { fetchTweets } from "nitter-scraper";
@@ -19,6 +25,16 @@ async function main() {
 }
 
 main().catch(console.error);
+```
+
+### As a CLI Tool
+
+```bash
+# Run the scraper using Bun
+bun run cli
+
+# Or if installed globally
+nitter-scraper
 ```
 
 ## Features

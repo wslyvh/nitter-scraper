@@ -1,14 +1,18 @@
 {
   "name": "nitter-scraper",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A Twitter scraper that uses Nitter to fetch tweets without authentication",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "nitter-scraper": "./dist/cli.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "bun run src/index.ts",
     "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "bun run src/cli.ts"
   },
   "keywords": [
     "twitter",
@@ -19,7 +23,8 @@
   "author": "wslyvh",
   "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "tsc-alias": "^1.8.11"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
