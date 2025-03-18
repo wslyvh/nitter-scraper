@@ -1,17 +1,32 @@
 {
   "name": "nitter-scraper",
-  "module": "src/index.ts",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "A Twitter scraper that uses Nitter to fetch tweets without authentication",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "bun run src/index.ts"
+    "build": "tsc",
+    "start": "bun run src/index.ts",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "twitter",
+    "scraper",
+    "nitter",
+    "tweets"
+  ],
+  "author": "wslyvh",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
+    "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
-  "dependencies": {
-    "cheerio": "^1.0.0"
-  }
+  "files": [
+    "dist",
+    "README.md"
+  ]
 }
