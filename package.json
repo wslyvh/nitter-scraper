@@ -1,7 +1,13 @@
 {
   "name": "nitter-scraper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Twitter scraper that uses Nitter to fetch tweets without authentication",
+  "author": "wslyvh",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wslyvh/nitter-scraper.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -20,8 +26,6 @@
     "nitter",
     "tweets"
   ],
-  "author": "wslyvh",
-  "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "tsc-alias": "^1.8.11"
