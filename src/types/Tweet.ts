@@ -4,4 +4,8 @@ export interface Tweet {
   username: string;
   created_at: string | null;
   timestamp: number | null;
+  replies: number;
+  retweets: number;
+  likes: number;
+  type: "tweet" | "retweet" | "reply";
 }

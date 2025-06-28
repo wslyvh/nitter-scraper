@@ -15,10 +15,10 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "bun run src/index.ts",
+    "start": "bun run ./src/index.ts",
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cli": "bun run src/cli.ts"
+    "cli": "bun run ./src/cli.ts"
   },
   "keywords": [
     "twitter",

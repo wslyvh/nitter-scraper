@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
-import type { Tweet } from "@/types/Tweet";
-import { formatDate, getDateFromTimestamp } from "@/utils/dateUtils";
+import type { Tweet } from "./types/Tweet";
+import { formatDate, getDateFromTimestamp } from "./utils/dateUtils";
 
 // Constants
 const USER_AGENT =
@@ -72,6 +72,29 @@ function extractTweetsFromHtml(
       // Parse the date from the timestamp
       const date = getDateFromTimestamp(timestamp, dateStr);
 
+      // Extract engagement statistics
+      const replies =
+        parseInt(
+          tweetElement.find(".icon-comment").parent().text().replace(/\D/g, "")
+        ) || 0;
+      const retweets =
+        parseInt(
+          tweetElement.find(".icon-retweet").parent().text().replace(/\D/g, "")
+        ) || 0;
+      const likes =
+        parseInt(
+          tweetElement.find(".icon-heart").parent().text().replace(/\D/g, "")
+        ) || 0;
+
+      // Determine tweet type
+      const isReply = tweetElement.find(".replying-to").length > 0;
+      const isRetweet =
+        tweetElement.find(".retweet-header").length > 0 ||
+        tweetElement.find(".quote").length > 0;
+      let type: "tweet" | "retweet" | "reply" = "tweet";
+      if (isReply) type = "reply";
+      else if (isRetweet) type = "retweet";
+
       // Create tweet object
       const tweet: Tweet = {
         id: cleanId,
@@ -79,6 +102,10 @@ function extractTweetsFromHtml(
         username,
         created_at: formatDate(date),
         timestamp: date ? Math.floor(date.getTime() / 1000) : null,
+        replies,
+        retweets,
+        likes,
+        type,
       };
 
       tweets.push(tweet);
@@ -97,9 +124,13 @@ function extractTweetsFromHtml(
 async function fetchTweetsPage(
   username: string,
   cursor: string | null,
-  pageNumber: number
+  pageNumber: number,
+  includeReplies: boolean = false
 ): Promise<{ html: string; status: number }> {
-  let url = `${BASE_URL}/${username}/with_replies`;
+  let url = `${BASE_URL}/${username}`;
+  if (includeReplies) {
+    url += `/with_replies`;
+  }
   if (cursor) {
     url += `?cursor=${cursor}`;
   }
@@ -135,7 +166,8 @@ async function fetchTweetsPage(
  */
 export async function fetchTweets(
   username: string,
-  maxPages: number = 3
+  maxPages: number = 3,
+  includeReplies: boolean = false
 ): Promise<Tweet[]> {
   let cursor: string | null = null;
   let pageNumber = 1;
@@ -146,7 +178,8 @@ export async function fetchTweets(
     const { html, status } = await fetchTweetsPage(
       username,
       cursor,
-      pageNumber
+      pageNumber,
+      includeReplies
     );
 
     if (status !== 200 || !html) {
