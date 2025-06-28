@@ -88,12 +88,49 @@ function extractTweetsFromHtml(
 
       // Determine tweet type
       const isReply = tweetElement.find(".replying-to").length > 0;
+      const isQuote = tweetElement.find(".quote").length > 0;
       const isRetweet =
-        tweetElement.find(".retweet-header").length > 0 ||
-        tweetElement.find(".quote").length > 0;
+        tweetElement.find(".retweet-header").length > 0 || isQuote;
       let type: "tweet" | "retweet" | "reply" = "tweet";
       if (isReply) type = "reply";
       else if (isRetweet) type = "retweet";
+
+      // Reference extraction
+      let reference: Tweet["reference"] | undefined = undefined;
+      if (isQuote) {
+        // Quote tweet reference
+        const quoteLink = tweetElement.find(".quote-link");
+        const quoteHref = quoteLink.attr("href") || "";
+        let quoteId = quoteHref.split("/").pop() || "";
+        quoteId = quoteId.replace(/#m$/, "");
+        const quoteUsername = tweetElement
+          .find(".quote .username")
+          .first()
+          .text()
+          .replace(/^@/, "");
+
+        reference = {
+          id: quoteId,
+          username: quoteUsername,
+        };
+      } else if (isRetweet) {
+        // Retweet reference
+        const retweetUsername = tweetElement
+          .find(".tweet-header .username")
+          .first()
+          .text()
+
+          .replace(/^@/, "");
+        const retweetIdHref =
+          tweetElement.find(".tweet-header .tweet-date a").attr("href") || "";
+        let retweetId = retweetIdHref.split("/").pop() || "";
+        retweetId = retweetId.replace(/#m$/, "");
+
+        reference = {
+          id: retweetId,
+          username: retweetUsername,
+        };
+      }
 
       // Create tweet object
       const tweet: Tweet = {
@@ -106,6 +143,7 @@ function extractTweetsFromHtml(
         retweets,
         likes,
         type,
+        reference,
       };
 
       tweets.push(tweet);

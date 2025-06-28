@@ -8,4 +8,8 @@ export interface Tweet {
   retweets: number;
   likes: number;
   type: "tweet" | "retweet" | "reply";
+  reference?: {
+    id: string;
+    username: string;
+  };
 }

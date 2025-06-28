@@ -9,7 +9,7 @@ async function main() {
     console.log(`Starting Twitter scraper for @${username}`);
 
     // Fetch tweets
-    const tweets = await fetchTweets(username, 3, true);
+    const tweets = await fetchTweets(username, 1, true);
 
     // Save tweets to file
     saveTweets(tweets);
