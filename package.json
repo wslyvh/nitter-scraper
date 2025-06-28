@@ -1,6 +1,6 @@
 {
   "name": "nitter-scraper",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A Twitter scraper that uses Nitter to fetch tweets without authentication",
   "author": "wslyvh",
   "license": "MIT",
