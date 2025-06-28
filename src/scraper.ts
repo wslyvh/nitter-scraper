@@ -14,7 +14,8 @@ const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds delay between requests
 function extractTweetsFromHtml(
   html: string,
   username: string,
-  existingTweets: Map<string, Tweet>
+  existingTweets: Map<string, Tweet>,
+  sinceDate: Date | null
 ): {
   tweets: Tweet[];
   nextCursor: string | null;
@@ -153,6 +154,17 @@ function extractTweetsFromHtml(
     }
   });
 
+  if (sinceDate) {
+    const filtered = tweets.filter(
+      (t) => t.timestamp && t.timestamp * 1000 >= sinceDate.getTime()
+    );
+
+    // If any tweet was filtered out, it means we've passed sinceDate, so stop pagination
+    if (filtered.length < tweets.length) {
+      return { tweets: filtered, nextCursor: null };
+    }
+  }
+
   return { tweets, nextCursor };
 }
 
@@ -185,7 +197,7 @@ async function fetchTweetsPage(
     if (response.status === 429) {
       console.log("Rate limit exceeded. Waiting 30 seconds before retrying...");
       await new Promise((resolve) => setTimeout(resolve, 30000));
-      return fetchTweetsPage(username, cursor, pageNumber);
+      return fetchTweetsPage(username, cursor, pageNumber, includeReplies);
     }
 
     const html = await response.text();
@@ -199,11 +211,14 @@ async function fetchTweetsPage(
 /**
  * Fetch tweets from Nitter for a given username
  * @param username Twitter username to scrape (without @)
+ * @param sinceDate Optional date to start fetching tweets from (default: null)
  * @param maxPages Maximum number of pages to fetch (default: 3)
+ * @param includeReplies Whether to include replies (default: false)
  * @returns Promise containing an array of tweets
  */
 export async function fetchTweets(
   username: string,
+  sinceDate: Date | null = null,
   maxPages: number = 3,
   includeReplies: boolean = false
 ): Promise<Tweet[]> {
@@ -228,7 +243,8 @@ export async function fetchTweets(
     const { tweets, nextCursor } = extractTweetsFromHtml(
       html,
       username,
-      existingTweets
+      existingTweets,
+      sinceDate
     );
     allTweets = [...allTweets, ...tweets];
 

@@ -49,13 +49,15 @@ nitter-scraper
 ### fetchTweets
 
 ```typescript
-fetchTweets(username: string, maxPages?: number): Promise<Tweet[]>
+fetchTweets(username: string, sinceDate?: Date, maxPages?: number, includeReplies?: boolean): Promise<Tweet[]>
 ```
 
 Parameters:
 
 - `username`: Twitter username to scrape (without @)
+- `sinceDate`: Optional date to start fetching tweets from (default: null)
 - `maxPages`: Maximum number of pages to fetch (default: 3)
+- `includeReplies`: Whether to include replies (default: false)
 
 ### Tweet Type
 

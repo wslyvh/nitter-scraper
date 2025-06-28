@@ -9,7 +9,9 @@ async function main() {
     console.log(`Starting Twitter scraper for @${username}`);
 
     // Fetch tweets
-    const tweets = await fetchTweets(username, 1, true);
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    const tweets = await fetchTweets(username, lastWeek, 3, true);
 
     // Save tweets to file
     saveTweets(tweets);
