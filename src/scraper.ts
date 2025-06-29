@@ -243,14 +243,14 @@ async function fetchTweetsPage(
  * Fetch tweets from Nitter for a given username
  * @param username Twitter username to scrape (without @)
  * @param sinceDate Optional date to start fetching tweets from (default: null)
- * @param maxPages Maximum number of pages to fetch (default: 3)
+ * @param maxPages Maximum number of pages to fetch (default: 1)
  * @param includeReplies Whether to include replies (default: false)
  * @returns Promise containing an array of tweets
  */
 export async function fetchTweets(
   username: string,
   sinceDate: Date | null = null,
-  maxPages: number = 3,
+  maxPages: number = 1,
   includeReplies: boolean = false
 ): Promise<Tweet[]> {
   let cursor: string | null = null;

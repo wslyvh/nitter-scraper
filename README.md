@@ -20,7 +20,7 @@ npm install -g nitter-scraper
 import { fetchTweets } from "nitter-scraper";
 
 async function main() {
-  const tweets = await fetchTweets("username", 3); // username without @, max pages (optional)
+  const tweets = await fetchTweets("username", 1); // username without @, max pages (optional)
   console.log(`Found ${tweets.length} tweets`);
 }
 
@@ -56,7 +56,7 @@ Parameters:
 
 - `username`: Twitter username to scrape (without @)
 - `sinceDate`: Optional date to start fetching tweets from (default: null)
-- `maxPages`: Maximum number of pages to fetch (default: 3)
+- `maxPages`: Maximum number of pages to fetch (default: 1)
 - `includeReplies`: Whether to include replies (default: false)
 
 ### Tweet Type
@@ -71,6 +71,7 @@ interface Tweet {
   replies: number;
   retweets: number;
   likes: number;
+  engagement_score: number;
   type: "tweet" | "retweet" | "reply";
   reference?: {
     id: string;
