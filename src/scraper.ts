@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Tweet } from "./types/Tweet";
 import { formatDate, getDateFromTimestamp } from "./utils/dateUtils";
+import { retry } from "./utils/retry";
 
 // Constants
 const USER_AGENTS = [
@@ -212,7 +213,7 @@ async function fetchTweetsPage(
     url += `?cursor=${cursor}`;
   }
 
-  try {
+  const fetchFn = async () => {
     const response = await fetch(url, {
       headers: {
         "User-Agent":
@@ -233,6 +234,10 @@ async function fetchTweetsPage(
 
     const html = await response.text();
     return { html, status: response.status };
+  };
+
+  try {
+    return await retry(fetchFn, 1, 2000);
   } catch (error) {
     console.error(`Error fetching tweets: ${error}`);
     return { html: "", status: 500 };
