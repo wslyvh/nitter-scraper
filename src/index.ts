@@ -1,3 +1,4 @@
 import { fetchTweets } from "./scraper";
+import { Tweet } from "./types";
 
-export { fetchTweets };
+export { fetchTweets, type Tweet };
