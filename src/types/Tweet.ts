@@ -7,6 +7,7 @@ export interface Tweet {
   replies: number;
   retweets: number;
   likes: number;
+  engagement_score: number;
   type: "tweet" | "retweet" | "reply";
   reference?: {
     id: string;

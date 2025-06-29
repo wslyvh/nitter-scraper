@@ -87,6 +87,9 @@ function extractTweetsFromHtml(
           tweetElement.find(".icon-heart").parent().text().replace(/\D/g, "")
         ) || 0;
 
+      // Calculate engagement score
+      const engagement_score = replies * 3 + retweets * 2 + likes;
+
       // Determine tweet type
       const isReply = tweetElement.find(".replying-to").length > 0;
       const isQuote = tweetElement.find(".quote").length > 0;
@@ -145,6 +148,7 @@ function extractTweetsFromHtml(
         likes,
         type,
         reference,
+        engagement_score,
       };
 
       tweets.push(tweet);
