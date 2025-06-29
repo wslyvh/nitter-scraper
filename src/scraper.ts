@@ -3,9 +3,28 @@ import type { Tweet } from "./types/Tweet";
 import { formatDate, getDateFromTimestamp } from "./utils/dateUtils";
 
 // Constants
-const USER_AGENT =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15";
-const BASE_URL = "https://nitter.net";
+const USER_AGENTS = [
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15",
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+  "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+  "Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+];
+const BASE_URLS = [
+  "https://nitter.net",
+  "https://nitter.privacyredirect.com",
+  "https://nitter.tiekoetter.com",
+];
+const REFERERS = [
+  "https://www.google.com/",
+  "https://news.ycombinator.com/",
+  "https://twitter.com/",
+  "https://www.reddit.com/",
+  "https://duckduckgo.com/",
+  "https://www.facebook.com/",
+  "https://www.bing.com/",
+  "https://github.com/",
+  "https://medium.com/",
+];
 
 function DELAY_BETWEEN_REQUESTS() {
   return 3000 + Math.floor(Math.random() * 2000);
@@ -181,10 +200,11 @@ function extractTweetsFromHtml(
 async function fetchTweetsPage(
   username: string,
   cursor: string | null,
-  pageNumber: number,
   includeReplies: boolean = false
 ): Promise<{ html: string; status: number }> {
-  let url = `${BASE_URL}/${username}`;
+  let url = `${
+    BASE_URLS[Math.floor(Math.random() * BASE_URLS.length)]
+  }/${username}`;
   if (includeReplies) {
     url += `/with_replies`;
   }
@@ -195,16 +215,20 @@ async function fetchTweetsPage(
   try {
     const response = await fetch(url, {
       headers: {
-        "User-Agent": USER_AGENT,
+        "User-Agent":
+          USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)],
+        Referer: REFERERS[Math.floor(Math.random() * REFERERS.length)],
         Accept: "text/html,application/xhtml+xml,application/xml",
         "Accept-Language": "en-US,en;q=0.9",
+        DNT: "1",
+        Connection: "keep-alive",
       },
     });
 
     if (response.status === 429) {
       console.log("Rate limit exceeded. Waiting 30 seconds before retrying...");
       await new Promise((resolve) => setTimeout(resolve, 30000));
-      return fetchTweetsPage(username, cursor, pageNumber, includeReplies);
+      return fetchTweetsPage(username, cursor, includeReplies);
     }
 
     const html = await response.text();
@@ -238,7 +262,6 @@ export async function fetchTweets(
     const { html, status } = await fetchTweetsPage(
       username,
       cursor,
-      pageNumber,
       includeReplies
     );
 
