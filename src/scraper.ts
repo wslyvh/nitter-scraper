@@ -6,7 +6,10 @@ import { formatDate, getDateFromTimestamp } from "./utils/dateUtils";
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15";
 const BASE_URL = "https://nitter.net";
-const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds delay between requests
+
+function DELAY_BETWEEN_REQUESTS() {
+  return 3000 + Math.floor(Math.random() * 2000);
+}
 
 /**
  * Extract tweets and next cursor from HTML content
@@ -261,7 +264,7 @@ export async function fetchTweets(
 
     if (pageNumber <= maxPages) {
       await new Promise((resolve) =>
-        setTimeout(resolve, DELAY_BETWEEN_REQUESTS)
+        setTimeout(resolve, DELAY_BETWEEN_REQUESTS())
       );
     }
   }
