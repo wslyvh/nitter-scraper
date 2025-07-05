@@ -12,8 +12,8 @@ const USER_AGENTS = [
 ];
 const BASE_URLS = [
   "https://nitter.net",
-  "https://nitter.privacyredirect.com",
-  "https://nitter.tiekoetter.com",
+  // "https://nitter.privacyredirect.com",
+  // "https://nitter.tiekoetter.com",
 ];
 const REFERERS = [
   "https://www.google.com/",
@@ -37,7 +37,6 @@ function DELAY_BETWEEN_REQUESTS() {
 function extractTweetsFromHtml(
   html: string,
   username: string,
-  existingTweets: Map<string, Tweet>,
   sinceDate: Date | null
 ): {
   tweets: Tweet[];
@@ -79,11 +78,6 @@ function extractTweetsFromHtml(
 
       if (!cleanId) {
         return; // Skip if no ID
-      }
-
-      // Skip if we already have this tweet
-      if (existingTweets.has(cleanId)) {
-        return;
       }
 
       const text = tweetElement.find(".tweet-content").text().trim();
@@ -175,7 +169,6 @@ function extractTweetsFromHtml(
       };
 
       tweets.push(tweet);
-      existingTweets.set(cleanId, tweet);
     } catch (error) {
       console.error(`Error extracting tweet: ${error}`);
     }
@@ -232,6 +225,10 @@ async function fetchTweetsPage(
       return fetchTweetsPage(username, cursor, includeReplies);
     }
 
+    if (response.status !== 200) {
+      console.error(`Unexpected status code: ${response.status} for ${url}`);
+    }
+
     const html = await response.text();
     return { html, status: response.status };
   };
@@ -261,7 +258,6 @@ export async function fetchTweets(
   let cursor: string | null = null;
   let pageNumber = 1;
   let allTweets: Tweet[] = [];
-  const existingTweets = new Map<string, Tweet>();
 
   while (pageNumber <= maxPages) {
     const { html, status } = await fetchTweetsPage(
@@ -278,7 +274,6 @@ export async function fetchTweets(
     const { tweets, nextCursor } = extractTweetsFromHtml(
       html,
       username,
-      existingTweets,
       sinceDate
     );
     allTweets = [...allTweets, ...tweets];
@@ -297,5 +292,13 @@ export async function fetchTweets(
     }
   }
 
-  return allTweets;
+  // Deduplicate tweets by ID before returning
+  const uniqueTweetsMap = new Map<string, Tweet>();
+  for (const tweet of allTweets) {
+    if (!uniqueTweetsMap.has(tweet.id)) {
+      uniqueTweetsMap.set(tweet.id, tweet);
+    }
+  }
+
+  return Array.from(uniqueTweetsMap.values());
 }
